@@ -1,0 +1,104 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+
+using namespace std;
+
+// Функція для генерації випадкового числа в заданому діапазоні
+int getRandomNumber(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+
+// Функція для обчислення середнього геометричного значення рядка
+double calculateGeometricMean(int* row, int size) {
+    double product = 1.0;
+    for (int i = 0; i < size; ++i) {
+        product *= row[i];
+    }
+    return pow(product, 1.0 / size);
+}
+
+// Функція для обміну значень
+void swap(double& a, double& b) {
+    double temp = a;
+    a = b;
+    b = temp;
+}
+
+// Функція для спуску елемента вниз у купі
+void heapify(double arr[], int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+
+    if (l < n && arr[l] > arr[largest])
+        largest = l;
+
+    if (r < n && arr[r] > arr[largest])
+        largest = r;
+
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+// Функція для пірамідального сортування
+void heapSort(double arr[], int n) {
+    // Побудова купи (кучі)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+    // Витягування по одному елементу з купи
+    for (int i = n - 1; i > 0; i--) {
+        swap(arr[0], arr[i]);
+        heapify(arr, i, 0);
+    }
+}
+
+int main() {
+    srand(time(0)); // Ініціалізація генератора випадкових чисел
+
+    const int ROWS = 10;
+    const int COLS = 7;
+
+    // Створення динамічного масиву
+    int** matrix = new int* [ROWS];
+    for (int i = 0; i < ROWS; ++i) {
+        matrix[i] = new int[COLS];
+    }
+
+    // Заповнення масиву випадковими числами та виведення на екран
+    cout << "Matrix:" << endl;
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLS; ++j) {
+            matrix[i][j] = getRandomNumber(-10, 10);
+            cout << matrix[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    // Обчислення середнього геометричного та збереження у масив
+    double geometricMeans[ROWS];
+    for (int i = 0; i < ROWS; ++i) {
+        geometricMeans[i] = calculateGeometricMean(matrix[i], COLS);
+    }
+
+    // Сортування значень за спаданням за допомогою пірамідального сортування
+    heapSort(geometricMeans, ROWS);
+
+    // Виведення відсортованих значень на екран
+    cout << "\nSorted geometric means:" << endl;
+    for (int i = ROWS - 1; i >= 0; --i) {
+        cout << geometricMeans[i] << endl;
+    }
+
+    // Звільнення пам'яті
+    for (int i = 0; i < ROWS; ++i) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+
+    return 0;
+}
