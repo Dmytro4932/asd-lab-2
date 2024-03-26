@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
+#include <Windows.h>
 
 using namespace std;
 
@@ -14,10 +15,13 @@ int getRandomNumber(int min, int max) {
 double calculateGeometricMean(int* row, int size) {
     double product = 1.0;
     for (int i = 0; i < size; ++i) {
-        product *= row[i];
+        if (row[i] != 0) {
+            product *= row[i];
+        }
     }
-    return pow(product, 1.0 / size);
+    return pow(fabs(product), 1.0 / size);
 }
+
 
 // Функція для обміну значень
 void swap(double& a, double& b) {
@@ -58,6 +62,8 @@ void heapSort(double arr[], int n) {
 }
 
 int main() {
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
     srand(time(0)); // Ініціалізація генератора випадкових чисел
 
     const int ROWS = 10;
@@ -70,7 +76,7 @@ int main() {
     }
 
     // Заповнення масиву випадковими числами та виведення на екран
-    cout << "Matrix:" << endl;
+    cout << "Масив (10x7):" << endl;
     for (int i = 0; i < ROWS; ++i) {
         for (int j = 0; j < COLS; ++j) {
             matrix[i][j] = getRandomNumber(-10, 10);
@@ -85,13 +91,14 @@ int main() {
         geometricMeans[i] = calculateGeometricMean(matrix[i], COLS);
     }
 
+
     // Сортування значень за спаданням за допомогою пірамідального сортування
     heapSort(geometricMeans, ROWS);
 
-    // Виведення відсортованих значень на екран
-    cout << "\nSorted geometric means:" << endl;
-    for (int i = ROWS - 1; i >= 0; --i) {
-        cout << geometricMeans[i] << endl;
+    // Вивід відсортованих середніх геометричних
+    cout << "\nСортовані середні значення рядків: " << endl << endl;
+    for (int i = 0; i < ROWS; ++i) {
+        cout << "Рядок " << i + 1 << ": " << geometricMeans[i] << endl;
     }
 
     // Звільнення пам'яті
